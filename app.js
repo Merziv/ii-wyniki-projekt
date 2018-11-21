@@ -56,7 +56,7 @@ app.get("/person", personCotroller.getPerson);
 
 app.post("/addPerson", personCotroller.addPerson);
 
-app.get("/delete", personCotroller.deletePerson);
+app.delete("/delete", personCotroller.deletePerson);
 
 app.put("/updatePerson", personCotroller.putPerson);
 
