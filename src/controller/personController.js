@@ -5,7 +5,9 @@ var {Request, Response} = require('express');
 class PersonController{
     addPerson(req, res){
         console.log(req.body);
-        var myData = new person({"name": req.body.name, "surname": req.body.surname});
+        var myData = new person({"name": req.body.name,
+            "surname": req.body.surname,
+            "pdf" : req.body.pdf});
         myData.save()
             .then(item => {
             res.send("item saved to database");
@@ -41,8 +43,9 @@ class PersonController{
     putPerson(req, res){
         var name = req.body.name;
         var surname = req.body.surname;
+        var pdf = req.body.pdf;
 
-        person.findOneAndUpdate({name: name, surname: surname}, {name: "changed by PUT"}, function (err, result){
+        person.findOneAndUpdate({name: name, surname: surname, pdf: pdf}, {name: "changed by PUT"}, function (err, result){
             if(err){
                 console.log(err);
             }

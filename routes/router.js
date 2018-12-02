@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var User = require('../src/model/user');
 var express = require('express');
 var router = express.Router();
+var db = mongoose.connection;
 //var path = require('path');
 
 
@@ -68,11 +69,59 @@ router.get('/profile', function (req, res, next) {
                 return next(error);
             } else {
                 if (user === null) {
-                    var err = new Error('Not authorized! Go back!');
+                    var err = new Error('Not authorized! Go back!<br><br>'+
+                        '<a type="button" href=\"/\">Return</a>');
                     err.status = 400;
                     return next(err);
                 } else {
-                    return res.send('<h1>Name: </h1>' + user.username + '<h2>Mail: </h2>' + user.email + '<br><a type="button" href="/logout">Logout</a>');
+                    return res.send('<h1>Name: </h1>' + user.username + '<br><br>' +
+                        '<a type="button" href="/stats">Show stats</a><br>' +
+                        '<h2>Mail: </h2>' + user.email + '<br>' +
+                        '<a type="button" href="/logout">Logout</a>');
+                }
+            }
+        });
+});
+
+
+
+router.get('/stats', function(req, res, next) {
+    User.findById(req.session.userId)
+        .exec(function (error, user) {
+            if (error) {
+                return next(error);
+            } else {
+                if (user === null) {
+                    var err = new Error('Not authorized! Go back!<br><br>'+
+                        '<a type="button" href=\"/\">Return</a>');
+                    err.status = 400;
+                    return next(err);
+                } else {
+                    var collection = db.collection('people');
+                    var cursor = collection.find().sort({"pdf":-1});
+                    var str = "<a type=\"button\" href=\"/profile\">Return</a>" +
+                        "<table style=\"width:50%;text-align:center\">" +
+                        "  <tr>" +
+                        "    <th>ID</th>" +
+                        "    <th>First name</th>" +
+                        "    <th>Last name</th>" +
+                        "    <th>PDF</th>" +
+                        "  </tr>" +
+                        "<tr>";
+                    cursor.forEach(function(item) {
+                            if (item != null) {
+                                str += "<td>" + "</td>" +
+                                    "<td>" + item.name + "</td>" +
+                                    "<td>" + item.surname + "</td>" +
+                                    "<td>" + item.pdf + "</td>" +
+                                    "</tr>" +
+                                    "<tr>";
+                            }
+                        }, function(err) {
+                            str+="</tr></table>"
+                            res.send(str);
+                        }
+                    );
                 }
             }
         });
