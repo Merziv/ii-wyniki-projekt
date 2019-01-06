@@ -61,6 +61,31 @@ router.post('/', function (req, res, next) {
     }
 })
 
+
+
+// Special zone
+router.get('/admin', function (req, res, next) {
+    User.findById(req.session.userId)
+        .exec(function (error, user) {
+            if (error) {
+                return next(error);
+            } else {
+                if (user === null || user.class != "xylobolus") {
+                    var err = new Error('Not authorized! Go back!<br><br>'+
+                        '<a type="button" href=\"/\">Return</a>');
+                    err.status = 400;
+                    return next(err);
+                } else {
+                    return res.send("<a type=\"button\" href=\"/profile\">Return</a>"+
+                        '<h1>Name: </h1>' + user.username + '<br><br>' +
+                        '<h2>Welcome in the funneh zone!<br>' +
+                        'You are so lucky to be here.</h2>' +
+                        '<a type="button" href="/logout">Logout</a>');
+                }
+            }
+        });
+});
+
 // GET route after registering
 router.get('/profile', function (req, res, next) {
     User.findById(req.session.userId)
@@ -74,7 +99,8 @@ router.get('/profile', function (req, res, next) {
                     err.status = 400;
                     return next(err);
                 } else {
-                    return res.send('<h1>Name: </h1>' + user.username + '<br><br>' +
+                    return res.send("<a type=\"button\" href=\"/profile\">Return</a>"+
+                        '<h1>Name: </h1>' + user.username + '<br><br>' +
                         '<a type="button" href="/stats">Show stats</a><br>' +
                         '<h2>Mail: </h2>' + user.email + '<br>' +
                         '<a type="button" href="/logout">Logout</a>');

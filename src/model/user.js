@@ -21,6 +21,10 @@ var UserSchema = new mongoose.Schema({
     passwordConf: {
         type: String,
         required: true,
+    },
+    class: {
+        type: String,
+        default: "monkey"
     }
 });
 
